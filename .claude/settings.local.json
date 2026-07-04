@@ -1,0 +1,42 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(nvidia-smi --query-gpu=memory.used,memory.total --format=csv)",
+      "Bash(.venv/bin/python scripts/finetune_qwen.py --merge)",
+      "Bash(.venv/bin/python /tmp/claude-1000/-home-wasif-work-personal-rsid/fd1ac3b4-3bc1-4d93-b7cc-8b8c3780a207/scratchpad/eval_merged.py)",
+      "Bash(.venv/bin/python3 *)",
+      "Bash(time .venv/bin/python scripts/backtest.py --sample-size 30)",
+      "Bash(time .venv/bin/python scripts/backtest.py --sample-size 1000)",
+      "Bash(nvidia-smi --query-gpu=memory.used,memory.total,utilization.gpu --format=csv)",
+      "Bash(ps -o etimes= -p 103520)",
+      "Bash(.venv/bin/python scripts/finetune_qwen.py --help)",
+      "WebSearch",
+      "Bash(gh api *)",
+      "Bash(claude mcp *)",
+      "Bash(python3 -m pip --version)",
+      "Bash(pip3 --version)",
+      "Bash(python3 -m pip install --user uv)",
+      "Bash(curl -LsSf https://astral.sh/uv/install.sh)",
+      "Bash(sh)",
+      "Read(//home/wasif/**)",
+      "Bash(bash -lc 'echo $PATH')",
+      "WebFetch(domain:developers.googleblog.com)",
+      "Bash(ps -p 103520 -o pid,etimes,cmd)",
+      "mcp__colab-mcp__open_colab_browser_connection",
+      "Bash(ps -p 103520 -o pid,etime,pcpu,pmem,cmd)",
+      "Bash(nvidia-smi --query-compute-apps=pid,used_memory --format=csv)",
+      "mcp__colab-mcp__get_cells",
+      "mcp__colab-mcp__update_cell",
+      "mcp__colab-mcp__run_code_cell",
+      "mcp__colab-mcp__add_code_cell",
+      "Bash(gh auth *)",
+      "Bash(gh repo *)",
+      "Bash(gzip -c /home/wasif/work/personal/rsid/data/dataset/train.jsonl)",
+      "Bash(rm -rf /tmp/claude-1000/-home-wasif-work-personal-rsid/fbc0cca5-10f4-4254-8640-5faf0e20fc21/scratchpad/rsid-repo)",
+      "Bash(mkdir -p /tmp/claude-1000/-home-wasif-work-personal-rsid/fbc0cca5-10f4-4254-8640-5faf0e20fc21/scratchpad/rsid-repo/scripts /tmp/claude-1000/-home-wasif-work-personal-rsid/fbc0cca5-10f4-4254-8640-5faf0e20fc21/scratchpad/rsid-repo/data/dataset)",
+      "Bash(cp /home/wasif/work/personal/rsid/config.py /tmp/claude-1000/-home-wasif-work-personal-rsid/fbc0cca5-10f4-4254-8640-5faf0e20fc21/scratchpad/rsid-repo/)",
+      "Bash(cp /home/wasif/work/personal/rsid/requirements.txt /tmp/claude-1000/-home-wasif-work-personal-rsid/fbc0cca5-10f4-4254-8640-5faf0e20fc21/scratchpad/rsid-repo/)",
+      "Bash(cp /home/wasif/work/personal/rsid/scripts/finetune_qwen.py /tmp/claude-1000/-home-wasif-work-personal-rsid/fbc0cca5-10f4-4254-8640-5faf0e20fc21/scratchpad/rsid-repo/scripts/)"
+    ]
+  }
+}

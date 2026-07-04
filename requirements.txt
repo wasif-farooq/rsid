@@ -1,0 +1,11 @@
+pandas
+numpy
+pyarrow
+requests
+websocket-client
+torch
+transformers
+peft
+bitsandbytes
+trl
+accelerate
