@@ -36,7 +36,13 @@
       "Bash(mkdir -p /tmp/claude-1000/-home-wasif-work-personal-rsid/fbc0cca5-10f4-4254-8640-5faf0e20fc21/scratchpad/rsid-repo/scripts /tmp/claude-1000/-home-wasif-work-personal-rsid/fbc0cca5-10f4-4254-8640-5faf0e20fc21/scratchpad/rsid-repo/data/dataset)",
       "Bash(cp /home/wasif/work/personal/rsid/config.py /tmp/claude-1000/-home-wasif-work-personal-rsid/fbc0cca5-10f4-4254-8640-5faf0e20fc21/scratchpad/rsid-repo/)",
       "Bash(cp /home/wasif/work/personal/rsid/requirements.txt /tmp/claude-1000/-home-wasif-work-personal-rsid/fbc0cca5-10f4-4254-8640-5faf0e20fc21/scratchpad/rsid-repo/)",
-      "Bash(cp /home/wasif/work/personal/rsid/scripts/finetune_qwen.py /tmp/claude-1000/-home-wasif-work-personal-rsid/fbc0cca5-10f4-4254-8640-5faf0e20fc21/scratchpad/rsid-repo/scripts/)"
+      "Bash(cp /home/wasif/work/personal/rsid/scripts/finetune_qwen.py /tmp/claude-1000/-home-wasif-work-personal-rsid/fbc0cca5-10f4-4254-8640-5faf0e20fc21/scratchpad/rsid-repo/scripts/)",
+      "Bash(.venv/bin/python -c ' *)",
+      "Bash(.venv/bin/python scripts/finetune_qwen.py --train-path data/dataset/train.jsonl --val-path data/dataset/val_subset.jsonl --epochs 1 --batch-size 1 --grad-accum 16 --no-gradient-checkpointing --logging-steps 50 --eval-steps 500 --save-steps 500 --resume-from-checkpoint)",
+      "Bash(nvidia-smi --query-gpu=name,driver_version --format=csv)",
+      "Bash(nvcc --version)",
+      "Bash(.venv/bin/pip freeze *)",
+      "Bash(.venv/bin/pip install *)"
     ]
   }
 }

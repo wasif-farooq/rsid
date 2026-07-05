@@ -1,0 +1,27 @@
+features: /home/wasif/work/personal/rsid/data/processed/HYPEUSDT_features_2025-05-30_2026-07-03.parquet
+labeled:  /home/wasif/work/personal/rsid/data/processed/HYPEUSDT_2025-05-30_2026-07-03_labeled.parquet
+reconstructing build_dataset.py's example list (with iloc metadata kept)...
+reconstructed: train=86307 val=9589 (build_dataset.py produced train=86307 val=9589)
+backtesting on 500 sampled val examples...
+Loading weights:   0%|          | 0/290 [00:00<?, ?it/s]Loading weights:   0%|          | 1/290 [00:00<01:19,  3.63it/s]Loading weights:   9%|▉         | 27/290 [00:00<00:02, 90.24it/s]Loading weights:  18%|█▊        | 52/290 [00:00<00:01, 135.81it/s]Loading weights:  24%|██▍       | 71/290 [00:01<00:05, 40.28it/s] Loading weights:  29%|██▊       | 83/290 [00:01<00:04, 42.95it/s]Loading weights:  34%|███▍      | 98/290 [00:01<00:03, 54.83it/s]Loading weights:  39%|███▊      | 112/290 [00:02<00:03, 49.31it/s]Loading weights:  42%|████▏     | 121/290 [00:02<00:05, 33.35it/s]Loading weights:  44%|████▍     | 128/290 [00:03<00:05, 29.25it/s]Loading weights:  50%|█████     | 146/290 [00:03<00:03, 39.88it/s]Loading weights:  52%|█████▏    | 152/290 [00:03<00:05, 26.77it/s]Loading weights:  54%|█████▍    | 158/290 [00:04<00:04, 29.00it/s]Loading weights:  56%|█████▌    | 163/290 [00:04<00:04, 30.44it/s]Loading weights:  59%|█████▉    | 171/290 [00:04<00:05, 21.70it/s]Loading weights:  60%|██████    | 175/290 [00:05<00:05, 21.10it/s]Loading weights:  64%|██████▍   | 186/290 [00:05<00:03, 31.42it/s]Loading weights:  68%|██████▊   | 196/290 [00:05<00:02, 37.94it/s]Loading weights:  70%|██████▉   | 202/290 [00:05<00:03, 24.15it/s]Loading weights:  71%|███████▏  | 207/290 [00:06<00:04, 19.52it/s]Loading weights:  76%|███████▌  | 221/290 [00:06<00:02, 30.14it/s]Loading weights:  80%|███████▉  | 231/290 [00:06<00:01, 30.69it/s]Loading weights:  81%|████████▏ | 236/290 [00:07<00:03, 14.58it/s]Loading weights:  84%|████████▍ | 244/290 [00:08<00:02, 19.16it/s]Loading weights:  89%|████████▊ | 257/290 [00:08<00:01, 27.08it/s]Loading weights:  91%|█████████ | 263/290 [00:08<00:00, 29.13it/s]Loading weights:  92%|█████████▏| 268/290 [00:09<00:01, 13.77it/s]Loading weights:  94%|█████████▍| 272/290 [00:09<00:01, 15.24it/s]Loading weights:  99%|█████████▊| 286/290 [00:09<00:00, 26.74it/s]Loading weights: 100%|██████████| 290/290 [00:09<00:00, 29.79it/s]
+  [50/500] 0.30 ex/s, elapsed 167s, ETA 1504s
+  [100/500] 0.30 ex/s, elapsed 331s, ETA 1322s
+  [150/500] 0.30 ex/s, elapsed 497s, ETA 1160s
+  [200/500] 0.30 ex/s, elapsed 663s, ETA 995s
+  [250/500] 0.30 ex/s, elapsed 828s, ETA 828s
+  [300/500] 0.30 ex/s, elapsed 989s, ETA 660s
+  [350/500] 0.30 ex/s, elapsed 1155s, ETA 495s
+  [400/500] 0.30 ex/s, elapsed 1320s, ETA 330s
+  [450/500] 0.30 ex/s, elapsed 1486s, ETA 165s
+  [500/500] 0.30 ex/s, elapsed 1649s, ETA 0s
+
+=== confusion (true_signal, predicted_signal) -> count ===
+  ('HOLD', 'HOLD'): 204
+  ('HOLD', 'BUY'): 106
+  ('SELL', 'HOLD'): 96
+  ('BUY', 'BUY'): 73
+  ('BUY', 'HOLD'): 21
+
+=== backtest results ===
+model-driven strategy (trade every model BUY/SELL): 179 trades | win rate 61.5% | avg return/trade +0.632% | total return (sum, no compounding) +113.13% | tp=73 sl=50 timeout=56
+baseline: trade every real divergence event long/short by true type: 452 trades | win rate 63.7% | avg return/trade +0.681% | total return (sum, no compounding) +307.81% | tp=190 sl=119 timeout=143

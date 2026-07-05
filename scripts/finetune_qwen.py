@@ -55,7 +55,7 @@ def train(args):
     has_val = len(dataset["validation"]) > 0 and not args.no_eval
 
     sft_config = SFTConfig(
-        output_dir=str(config.LORA_ADAPTER_DIR),
+        output_dir=args.output_dir,
         per_device_train_batch_size=args.batch_size,
         gradient_accumulation_steps=args.grad_accum,
         num_train_epochs=args.epochs,
@@ -85,24 +85,24 @@ def train(args):
 
     resume_from_checkpoint = args.resume_from_checkpoint
     if resume_from_checkpoint == "auto":
-        resume_from_checkpoint = get_last_checkpoint(str(config.LORA_ADAPTER_DIR))
+        resume_from_checkpoint = get_last_checkpoint(args.output_dir)
         if resume_from_checkpoint is None:
-            print(f"--resume-from-checkpoint given but no checkpoint found in {config.LORA_ADAPTER_DIR}, starting fresh")
+            print(f"--resume-from-checkpoint given but no checkpoint found in {args.output_dir}, starting fresh")
         else:
             print(f"resuming from latest checkpoint: {resume_from_checkpoint}")
     elif resume_from_checkpoint:
         print(f"resuming from checkpoint: {resume_from_checkpoint}")
 
     trainer.train(resume_from_checkpoint=resume_from_checkpoint)
-    trainer.save_model(str(config.LORA_ADAPTER_DIR))
-    tokenizer.save_pretrained(str(config.LORA_ADAPTER_DIR))
-    print(f"LoRA adapter saved -> {config.LORA_ADAPTER_DIR}")
+    trainer.save_model(args.output_dir)
+    tokenizer.save_pretrained(args.output_dir)
+    print(f"LoRA adapter saved -> {args.output_dir}")
 
 
 def merge(args):
-    tokenizer = AutoTokenizer.from_pretrained(str(config.LORA_ADAPTER_DIR))
+    tokenizer = AutoTokenizer.from_pretrained(args.output_dir)
     base_model = AutoModelForCausalLM.from_pretrained(config.BASE_MODEL, dtype=torch.bfloat16, device_map="cpu")
-    merged = PeftModel.from_pretrained(base_model, str(config.LORA_ADAPTER_DIR))
+    merged = PeftModel.from_pretrained(base_model, args.output_dir)
     merged = merged.merge_and_unload()
     config.LORA_MERGED_DIR.mkdir(parents=True, exist_ok=True)
     merged.save_pretrained(str(config.LORA_MERGED_DIR))
@@ -118,6 +118,13 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--train-path", default=str(config.DATASET_DIR / "train.jsonl"))
     parser.add_argument("--val-path", default=str(config.DATASET_DIR / "val.jsonl"))
+    parser.add_argument(
+        "--output-dir",
+        default=str(config.LORA_ADAPTER_DIR),
+        help="Where checkpoints and the final adapter are saved. Point this at a mounted "
+        "Google Drive path (e.g. /content/drive/MyDrive/rsid-lora) on Colab so checkpoints "
+        "survive a runtime disconnect.",
+    )
     parser.add_argument("--batch-size", type=int, default=2)
     parser.add_argument("--grad-accum", type=int, default=8)
     parser.add_argument("--epochs", type=float, default=3.0)

@@ -18,115 +18,14 @@ from collections import deque
 from datetime import datetime, timezone
 from pathlib import Path
 
-import torch
 import websocket
-from transformers import AutoModelForCausalLM, AutoTokenizer
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import config
+from rsid.bars import BarAggregator
 from rsid.divergence import StreamingDivergenceDetector
 from rsid.indicators import IncrementalWilderRSI
-from rsid.prompt import build_messages, parse_completion
-
-
-class BarAggregator:
-    """Buckets raw trade prices into 1s OHLCV bars, gap-filling silent seconds."""
-
-    def __init__(self):
-        self._lock = threading.Lock()
-        self._current_second = None
-        self._bar = None
-        self._last_close = None
-
-    def on_trade(self, price: float, qty: float, ts_ms: int):
-        second = ts_ms // 1000
-        with self._lock:
-            if self._current_second is None:
-                self._current_second = second
-                self._bar = {"open": price, "high": price, "low": price, "close": price, "volume": qty}
-                return []
-            if second == self._current_second:
-                b = self._bar
-                b["high"] = max(b["high"], price)
-                b["low"] = min(b["low"], price)
-                b["close"] = price
-                b["volume"] += qty
-                return []
-            if second < self._current_second:
-                return []  # out-of-order trade, ignore
-            return self._advance_to(second, next_open=price, next_qty=qty)
-
-    def flush_to(self, wall_second: int):
-        """Force-finalize bars up to wall_second even with no new trade."""
-        with self._lock:
-            if self._current_second is None or wall_second <= self._current_second:
-                return []
-            return self._advance_to(wall_second, next_open=None, next_qty=None)
-
-    def _advance_to(self, new_second: int, next_open, next_qty):
-        """Caller must hold self._lock. Finalizes the buffered bar, gap-fills
-        any skipped seconds, and starts a fresh bar at new_second."""
-        finished = [(self._current_second, dict(self._bar))]
-        self._last_close = self._bar["close"]
-
-        gap_second = self._current_second + 1
-        while gap_second < new_second:
-            flat = {
-                "open": self._last_close,
-                "high": self._last_close,
-                "low": self._last_close,
-                "close": self._last_close,
-                "volume": 0.0,
-            }
-            finished.append((gap_second, flat))
-            gap_second += 1
-
-        if next_open is not None:
-            self._bar = {"open": next_open, "high": next_open, "low": next_open, "close": next_open, "volume": next_qty}
-        else:
-            self._bar = {
-                "open": self._last_close,
-                "high": self._last_close,
-                "low": self._last_close,
-                "close": self._last_close,
-                "volume": 0.0,
-            }
-        self._current_second = new_second
-        return finished
-
-
-def load_model():
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    if config.LORA_MERGED_DIR.exists() and any(config.LORA_MERGED_DIR.iterdir()):
-        print(f"loading merged fine-tuned model from {config.LORA_MERGED_DIR}")
-        path = str(config.LORA_MERGED_DIR)
-        tokenizer = AutoTokenizer.from_pretrained(path)
-        model = AutoModelForCausalLM.from_pretrained(path, dtype=torch.bfloat16, device_map=device)
-        return tokenizer, model
-
-    if config.LORA_ADAPTER_DIR.exists() and any(config.LORA_ADAPTER_DIR.iterdir()):
-        from peft import PeftModel
-
-        print(f"loading base model + LoRA adapter from {config.LORA_ADAPTER_DIR}")
-        tokenizer = AutoTokenizer.from_pretrained(str(config.LORA_ADAPTER_DIR))
-        base = AutoModelForCausalLM.from_pretrained(config.BASE_MODEL, dtype=torch.bfloat16, device_map=device)
-        model = PeftModel.from_pretrained(base, str(config.LORA_ADAPTER_DIR))
-        return tokenizer, model
-
-    print("no fine-tuned model found -- falling back to base model (untrained on this task)")
-    tokenizer = AutoTokenizer.from_pretrained(config.BASE_MODEL)
-    model = AutoModelForCausalLM.from_pretrained(config.BASE_MODEL, dtype=torch.bfloat16, device_map=device)
-    return tokenizer, model
-
-
-def generate_signal(tokenizer, model, bars: list[dict], event: dict) -> dict:
-    messages = build_messages(bars, event)
-    prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-    inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
-    with torch.no_grad():
-        out = model.generate(**inputs, max_new_tokens=40, do_sample=False)
-    text = tokenizer.decode(out[0][inputs["input_ids"].shape[1] :], skip_special_tokens=True)
-    return parse_completion(text)
+from rsid.model import generate_signal, load_model
 
 
 def main():

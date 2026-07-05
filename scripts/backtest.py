@@ -31,6 +31,7 @@ import config
 from rsid.divergence import HIDDEN_BEARISH, HIDDEN_BULLISH
 from rsid.paths import find_latest
 from rsid.prompt import SIGNAL_HOLD, build_messages, parse_completion
+from rsid.reporting import summarize
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_dataset import make_bars_window, sample_negative_ilocs
@@ -149,23 +150,6 @@ def generate_signal(tokenizer, model, bars, event):
         out = model.generate(**inputs, max_new_tokens=40, do_sample=False)
     text = tokenizer.decode(out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True)
     return parse_completion(text)
-
-
-def summarize(trades, label):
-    n = len(trades)
-    if n == 0:
-        print(f"{label}: no trades taken")
-        return
-    wins = sum(1 for t in trades if t["pct_return"] > 0)
-    total = sum(t["pct_return"] for t in trades)
-    avg = total / n
-    tp = sum(1 for t in trades if t["outcome"] == "tp")
-    sl = sum(1 for t in trades if t["outcome"] == "sl")
-    timeout = sum(1 for t in trades if t["outcome"] == "timeout")
-    print(
-        f"{label}: {n} trades | win rate {wins / n:.1%} | avg return/trade {avg:+.3%} | "
-        f"total return (sum, no compounding) {total:+.2%} | tp={tp} sl={sl} timeout={timeout}"
-    )
 
 
 def main():
